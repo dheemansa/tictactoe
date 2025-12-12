@@ -10,6 +10,7 @@ import os
 
 RED = "\033[1;31m"
 BLUE = "\033[1;34m"
+YELLOW = "\033[1;33m"
 RESET = "\033[0m"
 
 CROSS = RED + "✕" + RESET
@@ -93,11 +94,11 @@ def main():
     turn_counter = 1
     while True:
         if turn_counter % 2 == 1:
-            player = "Player 1"
+            player = RED + "Player 1" + RESET
             value = 1
             symbol = CROSS
         else:
-            player = "Player 2"
+            player = BLUE + "Player 2" + RESET
             value = 2
             symbol = TICK
 
@@ -110,11 +111,11 @@ def main():
             str(x) if x in available_positions else " " for x in VALID_POSITIONS
         ]
 
-        print("Use this index numbers to choose your position")
-        print(grid_structure(*helper_index))
-
         while True:  # loop to iterate till a correct input is received
-            print(f"{player} turn ({symbol})")
+            print(YELLOW, "Use this index numbers to choose your position", RESET)
+            print(YELLOW, grid_structure(*helper_index), RESET)
+
+            print(f"{player} ({symbol}) turn ")
             show_grid(grid)
             try:
                 pos = int(input("Choose your position: "))
