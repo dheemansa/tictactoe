@@ -6,10 +6,16 @@ index: 0 1 2  -> top row
 values: 1 = player1, 2 = player2, 0 = empty
 """
 
-CROSS = "✕"
-TICK = "◯"
-
 import os
+
+RED = "\033[1;31m"
+BLUE = "\033[1;34m"
+RESET = "\033[0m"
+
+CROSS = RED + "✕" + RESET
+TICK = BLUE + "◯" + RESET
+
+VALID_POSITIONS = range(1, 10)
 
 
 def clear():
@@ -60,7 +66,7 @@ def check_winner(grid_list: list):
     # check diagonal
     row_1 = grid_list[0:3]
     row_2 = grid_list[3:6]
-    row_3 = grid_list[5:9]
+    row_3 = grid_list[6:9]
 
     col_1 = grid_list[0::3]
     col_2 = grid_list[1::3]
@@ -81,17 +87,6 @@ def check_winner(grid_list: list):
     )
 
 
-# grid = [0, 1, 2, 0, 0, 2, 0, 1, 2]
-
-
-# show_grid(grid)
-# winner = check_winner(grid)
-# if winner:
-#     print(f"winner is player{winner}")
-
-VALID_POSITIONS = range(1, 10)
-
-
 def main():
     grid = [0] * 9  # initialise with empty grid
 
@@ -100,15 +95,17 @@ def main():
         if turn_counter % 2 == 1:
             player = "Player 1"
             value = 1
+            symbol = CROSS
         else:
             player = "Player 2"
             value = 2
+            symbol = TICK
 
         available_positions = [
             index + 1 for index, value in enumerate(grid) if value == 0
         ]  # + 1 for game index adjustment
 
-        # show the grid with avalilable positions
+        # show the grid with available positions
         helper_index = [
             str(x) if x in available_positions else " " for x in VALID_POSITIONS
         ]
@@ -117,21 +114,24 @@ def main():
         print(grid_structure(*helper_index))
 
         while True:  # loop to iterate till a correct input is received
-            print(f"{player} turn")
+            print(f"{player} turn ({symbol})")
             show_grid(grid)
             try:
                 pos = int(input("Choose your position: "))
             except ValueError:
+                clear()
                 print(
-                    f"Invalid position, valid positions are {', '.join(str(x) for x in available_positions)}"
+                    f"{RED}Invalid position, valid positions are {', '.join(str(x) for x in available_positions)}{RESET}"
                 )
-                print("Try again")
+                print(f"{RED}Try again{RESET}")
                 continue
 
             if pos not in available_positions:
+                clear()
                 print(
-                    f"{pos} is not a valid position, valid positions are {', '.join(str(x) for x in available_positions)}"
+                    f"{RED}{pos} is not a valid position, valid positions are {', '.join(str(x) for x in available_positions)}{RESET}"
                 )
+                print(f"{RED}Try again{RESET}")
             else:
                 grid[pos - 1] = value  # -1 for the list index adjustment
                 break
@@ -142,9 +142,11 @@ def main():
             show_grid(grid)
             print(f"{player} has won the game")
             break
-        elif len(available_positions) == 1:
+
+        # check for tie
+        elif all(cell != 0 for cell in grid):
             show_grid(grid)
-            print("This game was a tie")
+            print("This game was a Tie")
             break
 
         else:
